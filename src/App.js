@@ -31,19 +31,21 @@ function App() {
     }
   ])
   
-  
+  const createPost = (newPost)=>{
+    setPosts([...posts, newPost])
+  }
+
+  const removePost = (post) => {
+    setPosts(posts.filter(p=> p.id !== post.id))
+  }
     
-    const addNewPost = (e)=>{
-        e.preventDefault();
-    
-        setPosts([...posts, {...post, id:Date.now()}])
-        setPost({title:'', body:''})
-    }
 
   return (
     <div className="App">
-      <PostForm posts={posts}/>
-      <PostsList posts={posts} title="Post List"/>
+      <PostForm create={createPost}/>
+        {posts.length !== 0?<PostsList remove={removePost} posts={posts} title="Post List"/>: <h1 style={{textAlign: 'center', verticalAlign: 'end'}}>Posts not found!</h1> }
+
+      
 
     </div>
   );
