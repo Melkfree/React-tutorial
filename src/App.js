@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import Counter from "./Components/Counter";
 import ClassCounter from "./Components/ClassCounter";
 import PostItem from "./Components/PostItem";
@@ -6,6 +6,7 @@ import PostsList from "./Components/PostsList";
 import MyButton from "./Components/UI/button/MyButton";
 import MyInput from "./Components/UI/input/MyInput";
 import PostForm from "./Components/PostForm";
+import MySelect from "./Components/UI/select/MySelect";
 import './styles/App.css';
 
 function App() {
@@ -31,6 +32,18 @@ function App() {
     }
   ])
   
+  const [selectedSort, setSelectedSort] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  function getSortedPosts(){
+    console.log(`function invoke`);
+    if( selectedSort){
+      return [...posts].sort((a,b) => a[selectedSort].localeCompare(b[selectedSort]))
+    } return posts
+  }
+
+  const sortedPosts = getSortedPosts();
+
   const createPost = (newPost)=>{
     setPosts([...posts, newPost])
   }
@@ -39,14 +52,27 @@ function App() {
     setPosts(posts.filter(p=> p.id !== post.id))
   }
     
+  const sortPosts = (sort) => {
+    setSelectedSort(sort);
+    
+  }
+
 
   return (
     <div className="App">
       <PostForm create={createPost}/>
-        {posts.length !== 0?<PostsList remove={removePost} posts={posts} title="Post List"/>: <h1 style={{textAlign: 'center', verticalAlign: 'end'}}>Posts not found!</h1> }
-
-      
-
+      <hr style={{margin: '15px 0'}}/>
+      <div>
+        <MyInput placeholder="Searching..." value={setSearchQuery} onChange={e => setSearchQuery(e.target.value)} />
+        <MySelect defaultValue="Sort by" 
+        value={selectedSort}
+        onChange={sortPosts}
+          options={[
+            {value: 'title', name: 'By title'},
+            {value: 'body', name: 'By description'}
+        ]} />
+      </div>
+        {posts.length ?<PostsList remove={removePost} posts={sortedPosts} title="Post List"/>: <h1 style={{textAlign: 'center', verticalAlign: 'end'}}>Posts not found!</h1> }
     </div>
   );
 }
